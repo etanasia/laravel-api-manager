@@ -4,7 +4,7 @@
  * @Author: ahmadnorin
  * @Date:   2017-11-28 00:02:15
  * @Last Modified by:   ahmadnorin
- * @Last Modified time: 2017-11-28 00:55:01
+ * @Last Modified time: 2017-11-28 09:45:46
  */
 
 namespace Bantenprov\LaravelApiManager;
@@ -39,8 +39,8 @@ class LaravelApiManagerServiceProvider extends ServiceProvider
      */
     public function register()
     {
-       /* $this->mergeConfigFrom(
-        __DIR__ . '/config/main.php', 'api-manager-main'
-        );*/
+       $this->mergeConfigFrom(
+        __DIR__ . '/config/laravel-api-manager.php', 'laravel-api-manager'
+        );
     }
 }

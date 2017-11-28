@@ -4,13 +4,13 @@
  * @Author: ahmadnorin
  * @Date:   2017-11-28 00:12:29
  * @Last Modified by:   ahmadnorin
- * @Last Modified time: 2017-11-28 00:45:52
+ * @Last Modified time: 2017-11-28 09:47:54
  */
 
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Models\ApiManager;
+use App\ApiManager;
 use Validator, Session, Redirect;
 
 class ApiManagerController extends Controller
@@ -55,6 +55,7 @@ class ApiManagerController extends Controller
     	$api->client 			= str_replace(array('https://', 'http://'), array('',''),$request->input('client'));
     	$api->api_keys 			= $this->token();
     	$api->description 		= $request->input('description');
+        $api->user_id           = 1;
     	$api->save();
     	Session::flash('message', 'Api Keys Data Saved Successfuly');
     	return Redirect::to('api_manager');
