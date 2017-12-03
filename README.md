@@ -69,6 +69,15 @@ browse dari browser anda
 ```sh
 http://your_domain.dev/api_manager
 ```
+#### <i class="icon-file"></i> Running Modul 
+
+tambahkan pada .env anda parameter berikut
+```sh
+BANTENPROV_APIHOST=api.bantenprov.go.id
+```
+untuk production site
+```sh
+BANTENPROV_APIHOST=api-01.dev.bantenprov.go.id
+```
+untuk development site
 #### <i class="icon-file"></i> Happy Coding  \\(*i^)//
-
-
