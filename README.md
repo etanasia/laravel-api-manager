@@ -1,8 +1,6 @@
 Welcome to Bantenprov/laravel-api-manager!
 ===================
 
-
-
 Documents
 -------------
 
