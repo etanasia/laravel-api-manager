@@ -13,6 +13,19 @@ update pull
 > - package ini di gunakan untuk mengelola API KEY Provinsi Banten.
 > - Package ini untuk laravel 4.2 keatas.
 
+## Workflow
+API Key Management ini dilengkapi dengan workflow management yang digunakan untuk melakukan proses permintaan API Key
+
+### Workflow State
+> - Request
+> - Needs completed document
+> - Document submitted
+> - Approved by admin
+> - Rejected by admin
+
+### Workflow Trasition
+> - Rejected by admin
+
 #### <i class="icon-file"></i> Install package
 
 ```sh
