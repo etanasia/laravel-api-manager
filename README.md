@@ -1,7 +1,5 @@
 Welcome to Bantenprov/laravel-api-manager!
 ===================
-## This is unmanaged branch, do not use on production site
-
 
 Documents
 -------------
