@@ -5,7 +5,7 @@ Documents
 -------------
 
 Ini adalah package yang di gunakan untuk laravel api manager pemprov banten, dan package ini masih versi beta, found some bugs, text me at 085711511295 or drop email to ahmadnorin@gmail.com
-
+update pull
 
 > **Note:**
 
