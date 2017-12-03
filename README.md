@@ -10,7 +10,7 @@ update pull
 > **Note:**
 
 > - Package ini masih dalam tahap pengembangan.
-> - package ini di gunakan untuk sso app provinsi banten.
+> - package ini di gunakan untuk mengelola API KEY Provinsi Banten.
 > - Package ini untuk laravel 4.2 keatas.
 
 #### <i class="icon-file"></i> Install package
