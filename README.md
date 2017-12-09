@@ -1,6 +1,7 @@
 Welcome to Bantenprov/laravel-api-manager!
 ===================
 [![codecov](https://codecov.io/gh/bantenprov/laravel-api-manager/branch/master/graph/badge.svg)](https://codecov.io/gh/bantenprov/laravel-api-manager)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/bantenprov/laravel-api-manager/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/bantenprov/laravel-api-manager/?branch=master)
 
 Documents
 -------------
