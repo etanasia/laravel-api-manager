@@ -1,12 +1,9 @@
-Welcome to Bantenprov/laravel-api-manager!
-===================
-[![Join the chat at https://gitter.im/document-management-system/Lobby](https://badges.gitter.im/document-management-system/Lobby.svg)](https://gitter.im/document-management-system/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
+# Welcome to Bantenprov/laravel-api-manager!
+[![Join the chat at https://gitter.im/laravel-api-manager/Lobby](https://badges.gitter.im/laravel-api-manager/Lobby.svg)](https://gitter.im/laravel-api-manager/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/bantenprov/laravel-api-manager/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/bantenprov/laravel-api-manager/?branch=master)
-
 [![Build Status](https://scrutinizer-ci.com/g/bantenprov/laravel-api-manager/badges/build.png?b=master)](https://scrutinizer-ci.com/g/bantenprov/laravel-api-manager/build-status/master)
 
-Documents
+## Documents
 -------------
 
 Ini adalah package yang di gunakan untuk laravel api manager pemprov banten, dan package ini masih versi beta, found some bugs, text me at 085711511295 or drop email to ahmadnorin@gmail.com
