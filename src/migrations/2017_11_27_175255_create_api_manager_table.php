@@ -20,6 +20,7 @@ class CreateApiManagerTable extends Migration {
 			$table->string('user_id', 100);
 			$table->string('client', 225);
 			$table->string('api_keys', 255);
+			$table->string('api_token', 255);
 			$table->text('description');
 			$table->integer('is_published')->default('1');
 		});

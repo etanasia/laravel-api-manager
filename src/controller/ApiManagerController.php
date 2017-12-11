@@ -51,9 +51,12 @@ class ApiManagerController extends Controller
                 ->withInput();
     	}
 
+      $token 		= $this->token();
     	$api = New ApiManager;
     	$api->client 			= str_replace(array('https://', 'http://'), array('',''),$request->input('client'));
-    	$api->api_keys 			= $this->token();
+      $api->api_keys 		= $token;
+      $api->api_token 	= $token;
+    	// $api->api_keys 			= $this->token();
     	$api->description 		= $request->input('description');
         $api->user_id           = 1;
     	$api->save();
