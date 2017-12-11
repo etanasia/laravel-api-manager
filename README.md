@@ -32,7 +32,7 @@ API Key Management ini dilengkapi dengan workflow management yang digunakan untu
 #### <i class="icon-file"></i> Install package
 
 ```sh
-composer require bantenprov/laravel-api-manager :dev-master
+composer require bantenprov/laravel-api-manager:dev-master
 ```
 #### <i class="icon-file"></i> edit file config/app.php
 
@@ -58,7 +58,7 @@ Copied Directory [/vendor/bantenprov/laravel-api-manager/src/migrations] To [/da
 Copied Directory [/vendor/laravel/framework/src/Illuminate/Mail/resources/views] To [/resources/views/vendor/mail]
 Publishing complete.
 ```
-#### <i class="icon-file"></i> tambahkan route 
+#### <i class="icon-file"></i> tambahkan route
 
 running script
 ```sh
@@ -70,20 +70,46 @@ hasilnya akan menambahkan route resource di routes/web.php
 Route::resource('api_manager', 'ApiManagerController');
 ```
 
-#### <i class="icon-file"></i> Migrasi database 
+#### <i class="icon-file"></i> Migrasi database
 
 running script
 ```sh
 php artisan migrate
 ```
 
-#### <i class="icon-file"></i> Running Modul 
+tambahan ini pada file config/auth.php
+```sh
+'guards' => [
+    ....
+
+    'key' => [
+        'driver' => 'token',
+        'provider' => 'apimanager',
+    ],
+],
+
+'providers' => [
+    ....
+
+    'apimanager' => [
+        'driver' => 'eloquent',
+        'model' => App\Apiauth::class,
+    ],
+],
+```
+
+dalam api route pada file routes/api.php gunakan middelware berikut untuk route yang ingin anda authorized menggunakan api manager ini.
+```sh
+->middleware('auth:key');
+```
+
+#### <i class="icon-file"></i> Running Modul
 
 browse dari browser anda
 ```sh
 http://your_domain.dev/api_manager
 ```
-#### <i class="icon-file"></i> Running Modul 
+#### <i class="icon-file"></i> Running Modul
 
 tambahkan pada .env anda parameter berikut
 ```sh
