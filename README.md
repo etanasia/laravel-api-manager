@@ -83,8 +83,16 @@ php artisan make:middleware ApiKey
 
 tambahkan ini pada file app/Http/Kernel.php
 ```php
-....
-'ApiKey' => \App\Http\Middleware\ApiKey::class,
+protected $routeMiddleware = [
+        'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
+        'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+        'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        'can' => \Illuminate\Auth\Middleware\Authorize::class,
+        'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+        'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        ....
+        'ApiKey' => \App\Http\Middleware\ApiKey::class,
+    ];
 ```
 
 dalam middleware ApiKey di app/Http/Middleware/ApiKey.php tambahkan ini.
