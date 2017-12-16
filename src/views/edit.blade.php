@@ -13,11 +13,11 @@
         </div><!-- /.box-header -->
 
         <!-- form start -->
-        <form action="{{ url('api_manager', $data->id) }}" method="post">
+        <form action="{{ url('api-manager', $data->id) }}" method="post">
             <div class="box-body">
                 <div class="form-group ">
                     <label for="name"> Api Keys</label>
-                    <input type="text" name="" id="" class="form-control" value="{{ $data->api_keys }}" required>
+                    <input type="text" name="" id="" class="form-control" value="{{ $data->api_key }}" readonly required>
                 </div>
                 <div class="form-group{{ $errors->has('client') ? ' has-error' : '' }}">
                     <label for="name"> Client</label>
@@ -38,7 +38,7 @@
             <div class="box-footer">
                 <div class="pull-right">
                     <button type="submit" class="btn btn-primary">Save</button>
-                    <a href="{{ url('api_manager') }}" class="btn btn-danger">Cancel</a>
+                    <a href="{{ url('api-manager') }}" class="btn btn-danger">Cancel</a>
                 </div>
             </div>
             {!! method_field('PUT') !!}
