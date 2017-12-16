@@ -6,7 +6,7 @@
 <div class="row">
     <div class="col-md-12">
         <div class="box">
-            <form action="{{url('api_manager')}}" method="GET">
+            <form action="{{url('api-manager')}}" method="GET">
                 <div class="box-body">
                     <div class="form-group">
                         <label for="name">Name</label>
@@ -45,8 +45,8 @@
                         <td>{{ $i++ }}</td>
                         <td>{{$row->created_at->format('M d, Y')}}</td>
                         <td>{{ $row->client }}</a></td>
-                        <td>{{$row->api_keys}}</td>
-                        <td><a href="{{ url('api_manager', $row->id).'/edit' }}" class="btn btn-warning btn-sm">
+                        <td>{{$row->api_key}}</td>
+                        <td><a href="{{ url('api-manager', $row->id).'/edit' }}" class="btn btn-warning btn-sm">
                         	action
                         </a></td>
                     </tr>
@@ -56,7 +56,7 @@
             <div class="box-footer clearfix">
                 {!! $data->render() !!}
                 <div class="pull-right">
-                    <a href="{{ url('api_manager/create') }}" class="btn btn-success">Add</a>
+                    <a href="{{ url('api-manager/create') }}" class="btn btn-success">Add</a>
                 </div>
             </div>
                 {!! csrf_field() !!}

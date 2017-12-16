@@ -14,12 +14,12 @@ class CreateApiManagerTable extends Migration {
 
 	public function up()
 	{
-		Schema::create('api_manager', function(Blueprint $table) {
+		Schema::create('api_keys', function(Blueprint $table) {
 			$table->increments('id');
 			$table->timestamps();
 			$table->string('user_id', 100);
 			$table->string('client', 225);
-			$table->string('api_keys', 255);
+			$table->string('api_key', 255);
 			$table->text('description');
 			$table->integer('is_published')->default('1');
 		});
@@ -27,6 +27,6 @@ class CreateApiManagerTable extends Migration {
 
 	public function down()
 	{
-		Schema::drop('api_manager');
+		Schema::drop('api_keys');
 	}
 }
