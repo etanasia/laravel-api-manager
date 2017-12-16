@@ -13,7 +13,7 @@
         </div><!-- /.box-header -->
 
         <!-- form start -->
-        <form action="{{ url('api_manager') }}" method="post">
+        <form action="{{ url('api-manager') }}" method="post">
             <div class="box-body">
                 <div class="form-group{{ $errors->has('client') ? ' has-error' : '' }}">
                     <label for="name"> Client</label>
@@ -34,7 +34,7 @@
             <div class="box-footer">
                 <div class="pull-right">
                     <button type="submit" class="btn btn-primary">Save</button>
-                    <a href="{{ url('api_manager') }}" class="btn btn-danger">Cancel</a>
+                    <a href="{{ url('api-manager') }}" class="btn btn-danger">Cancel</a>
                 </div>
             </div>
             {!! method_field('POST') !!}
