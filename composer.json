@@ -1,7 +1,7 @@
 {
     "name": "bantenprov/laravel-api-manager",
     "description": "api manager untuk aplikasi banten prov",
-    "type": "Project",
+    "type": "library",
     "license": "MIT",
     "authors": [
         {
