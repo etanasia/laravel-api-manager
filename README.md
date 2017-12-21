@@ -7,8 +7,7 @@
 ## Documents
 -------------
 
-Ini adalah package yang di gunakan untuk laravel api manager pemprov banten, dan package ini masih versi beta, found some bugs, text me at 085711511295 or drop email to ahmadnorin@gmail.com
-update pull
+Ini adalah package yang di gunakan untuk laravel api manager pemprov banten, dan package ini masih versi beta, found some bugs or want to improvement please send pull request
 
 > **Note:**
 
@@ -150,11 +149,11 @@ http://your_domain.dev/api-manager
 
 tambahkan pada .env anda parameter berikut
 ```sh
-BANTENPROV_APIHOST=api.bantenprov.go.id
+BANTENPROV_APIHOST="XXX"
 ```
 untuk production site
 ```sh
-BANTENPROV_APIHOST=api-01.dev.bantenprov.go.id
+BANTENPROV_APIHOST="YYY"
 ```
 untuk development site
 #### <i class="icon-file"></i> Happy Coding  \\(*i^)//
