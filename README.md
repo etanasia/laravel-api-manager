@@ -32,7 +32,7 @@ API Key Management ini dilengkapi dengan workflow management yang digunakan untu
 #### <i class="icon-file"></i> Install package
 
 ```sh
-composer require bantenprov/laravel-api-manager:dev-master
+composer require bantenprov/laravel-api-manager "1.0.0"
 ```
 #### <i class="icon-file"></i> edit file config/app.php
 
