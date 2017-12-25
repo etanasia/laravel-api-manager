@@ -93,11 +93,11 @@ http://your_domain.dev/api_manager
 
 tambahkan pada .env anda parameter berikut
 ```sh
-BANTENPROV_APIHOST=api.bantenprov.go.id
+BANTENPROV_APIHOST=""
 ```
 untuk production site
 ```sh
-BANTENPROV_APIHOST=api-01.dev.bantenprov.go.id
+BANTENPROV_APIHOST=""
 ```
 untuk development site
 #### <i class="icon-file"></i> Happy Coding  \\(*i^)//
