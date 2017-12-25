@@ -7,7 +7,7 @@ Welcome to Bantenprov/laravel-api-manager!
 Documents
 -------------
 
-Ini adalah package yang di gunakan untuk laravel api manager pemprov banten, dan package ini masih versi beta, found some bugs, text me at 085711511295 or drop email to ahmadnorin@gmail.com
+Ini adalah package yang di gunakan untuk laravel api manager pemprov banten, dan package ini masih versi beta, found some bugs, create a patch or pull request.
 update pull
 
 > **Note:**
@@ -38,12 +38,12 @@ API Key Management ini dilengkapi dengan workflow management yang digunakan untu
 #### <i class="icon-file"></i> Install package
 
 ```sh
-composer require bantenprov/laravel-api-manager :dev-master
+$ composer require bantenprov/laravel-api-manager :dev-master
 ```
 #### <i class="icon-file"></i> edit file config/app.php
 
 tambahan class ini pada file config/app.php
-```sh
+```php
 Bantenprov\LaravelApiManager\LaravelApiManagerServiceProvider::class,
 ```
 
@@ -92,11 +92,11 @@ http://your_domain.dev/api_manager
 #### <i class="icon-file"></i> Running Modul 
 
 tambahkan pada .env anda parameter berikut
-```sh
+```php
 BANTENPROV_APIHOST=""
 ```
 untuk production site
-```sh
+```php
 BANTENPROV_APIHOST=""
 ```
 untuk development site
