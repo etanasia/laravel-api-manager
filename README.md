@@ -17,7 +17,7 @@ update pull
 > - Package ini untuk laravel 4.2 keatas.
 
 ## Workflow
-API Key Management ini dilengkapi dengan workflow management yang digunakan untuk melakukan proses permintaan API Key
+API Key Management ini dilengkapi dengan workflow management yang digunakan untuk melakukan proses permintaan sampai persetujuan API Key
 
 ### Workflow State
 > - Request
