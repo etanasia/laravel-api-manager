@@ -17,7 +17,7 @@ update pull
 > - Package ini untuk laravel 4.2 keatas.
 
 ## Workflow
-API Key Management ini dilengkapi dengan workflow management yang digunakan untuk melakukan proses permintaan API Key
+API Key Management ini dilengkapi dengan workflow management yang digunakan untuk melakukan proses permintaan sampai persetujuan API Key
 
 ### Workflow State
 > - Request
@@ -93,11 +93,11 @@ http://your_domain.dev/api_manager
 
 tambahkan pada .env anda parameter berikut
 ```sh
-BANTENPROV_APIHOST=api.bantenprov.go.id
+BANTENPROV_APIHOST=""
 ```
 untuk production site
 ```sh
-BANTENPROV_APIHOST=api-01.dev.bantenprov.go.id
+BANTENPROV_APIHOST=""
 ```
 untuk development site
 #### <i class="icon-file"></i> Happy Coding  \\(*i^)//
