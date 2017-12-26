@@ -132,10 +132,10 @@ class ApiManagerController extends Controller
     }
 
     private function getState($state){
-      $name = \Transliteration::clean_filename(strtolower($state));
+        $name = \Transliteration::clean_filename(strtolower($state));
 			//$data = WorkflowState::where('status', 1)->where('name', 'like', '%' . $name . '%')->get();
-			$data = WorkflowState::where('status', 1)->where('name', 'like', '%' . $name . '%');
-      return $data;
+	    $data = WorkflowState::where('status', 1)->where('name', 'like', '%' . $name . '%');
+        return $data;
     }
 
     private function saveHistory($api, $workflow, $statesFrom, $statesTo){
@@ -143,9 +143,14 @@ class ApiManagerController extends Controller
     	$history->content_id   = $api->id;
     	$history->Workflow_id  = $workflow[0]->id;
         $history->from_state   = $statesFrom[0]->id;
-    	$history->to_state     = $statesTo[0]->id;
+        $history->to_state     = $statesTo[0]->id;
         $history->user_id      = 1;
-    	$history->save();
-      return $history;
+        try {
+            $history->save();
+        } catch(\Illuminate\Database\QueryException $e) {
+            return $e;
+        }
+
+        return $history;
     }
 }
