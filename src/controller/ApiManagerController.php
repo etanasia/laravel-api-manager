@@ -106,7 +106,7 @@ class ApiManagerController extends Controller
     	}
 
     	$api = ApiKeys::findOrFail($id);
-      $api->client            = str_replace(array('https://', 'http://'),array('',''),$request->input('client'));
+        $api->client            = str_replace(array('https://', 'http://'),array('',''),$request->input('client'));
     	$api->description 		= $request->input('description');
     	$api->save();
     	Session::flash('message', 'Api Keys Data Update Successfuly');
@@ -140,11 +140,11 @@ class ApiManagerController extends Controller
 
     private function saveHistory($api, $workflow, $statesFrom, $statesTo){
     	$history = New History;
-    	$history->content_id 			= $api->id;
-    	$history->Workflow_id 			= $workflow[0]->id;
-      $history->from_state 			= $statesFrom[0]->id;
-    	$history->to_state 		= $statesTo[0]->id;
-      $history->user_id           = 1;
+    	$history->content_id   = $api->id;
+    	$history->Workflow_id  = $workflow[0]->id;
+        $history->from_state   = $statesFrom[0]->id;
+    	$history->to_state     = $statesTo[0]->id;
+        $history->user_id      = 1;
     	$history->save();
       return $history;
     }
