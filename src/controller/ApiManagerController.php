@@ -54,12 +54,12 @@ class ApiManagerController extends Controller
                 ->withInput();
     	}
 
-      $token 		= $this->token();
+        $token 		= $this->token();
     	$api = New ApiKeys;
-    	$api->client 			= str_replace(array('https://', 'http://'), array('',''),$request->input('client'));
-    	$api->api_key 			= $token;
-    	$api->description 		= $request->input('description');
-      $api->user_id           = 1;
+    	$api->client      = str_replace(array('https://', 'http://'), array('',''),$request->input('client'));
+    	$api->api_key     = $token;
+    	$api->description = $request->input('description');
+        $api->user_id     = 1;
 
 
       //create history default
