@@ -17,6 +17,4 @@ class ApiKeys extends Model
 
     public $hidden = ['created_at', 'updated_at'];
 
-
-
 }
