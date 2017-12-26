@@ -60,7 +60,7 @@ class ApiManagerController extends Controller
     	$api->api_key 			= $token;
     	$api->description 		= $request->input('description');
       $api->user_id           = 1;
-    	
+
 
       //create history default
       $model = "ApiKeys";
@@ -71,18 +71,18 @@ class ApiManagerController extends Controller
 			$statesTo = $this->getState($toState);
 			if($workflow->count() == 0){
 				Session::flash('message', 'Error 101 #error workflow not found');
-				return Redirect::to('api-manager'); 
+				return Redirect::to('api-manager');
 			}elseif($statesTo->count() == 0 || $statesFrom->count() == 0){
 				Session::flash('message', 'Error 102 #error state not active or state not found');
 				return Redirect::to('api-manager');
-			}else{				
+			}else{
 				$api->save();
 				$this->saveHistory($api, $workflow->get(), $statesFrom->get(), $statesTo->get());
 
 				Session::flash('message', 'Api Keys Data Saved Successfuly');
 				return Redirect::to('api-manager');
 			}
-      
+
     }
 
     public function edit(Request $request, $id)
@@ -106,8 +106,8 @@ class ApiManagerController extends Controller
     	}
 
     	$api = ApiKeys::findOrFail($id);
-        $api->client            = str_replace(array('https://', 'http://'),array('',''),$request->input('client'));
-    	$api->description 		= $request->input('description');
+        $api->client      = str_replace(array('https://', 'http://'),array('',''),$request->input('client'));
+    	$api->description = $request->input('description');
     	$api->save();
     	Session::flash('message', 'Api Keys Data Update Successfuly');
     	return Redirect::to('api-manager');
