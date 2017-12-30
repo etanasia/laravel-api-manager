@@ -6,6 +6,11 @@
 <div class="row">
     <div class="col-md-12">
         <div class="box">
+            @if(Session::has('message'))
+                <div class="alert alert-info">
+                    {{ Session::get('message') }}
+                </div>
+            @endif
             <form action="{{url('api-manager')}}" method="GET">
                 <div class="box-body">
                     <div class="form-group">

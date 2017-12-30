@@ -60,7 +60,7 @@ class ApiManagerController extends Controller
     	$api->api_key 			= $token;
     	$api->description 		= $request->input('description');
       $api->user_id           = 1;
-    	$api->save();
+    	
 
       //create history default
       $model = "ApiKeys";
@@ -68,11 +68,21 @@ class ApiManagerController extends Controller
       $toState = "propose";
       $workflow = $this->getWorkflow($model);
       $statesFrom = $this->getState($fromState);
-      $statesTo = $this->getState($toState);
-      $this->saveHistory($api, $workflow, $statesFrom, $statesTo);
+			$statesTo = $this->getState($toState);
+			if($workflow->count() == 0){
+				Session::flash('message', 'Error 101 #error workflow not found');
+				return Redirect::to('api-manager'); 
+			}elseif($statesTo->count() == 0 || $statesFrom->count() == 0){
+				Session::flash('message', 'Error 102 #error state not active or state not found');
+				return Redirect::to('api-manager');
+			}else{				
+				$api->save();
+				$this->saveHistory($api, $workflow->get(), $statesFrom->get(), $statesTo->get());
 
-    	Session::flash('message', 'Api Keys Data Saved Successfuly');
-    	return Redirect::to('api-manager');
+				Session::flash('message', 'Api Keys Data Saved Successfuly');
+				return Redirect::to('api-manager');
+			}
+      
     }
 
     public function edit(Request $request, $id)
@@ -116,13 +126,15 @@ class ApiManagerController extends Controller
     }
 
     private function getWorkflow($model){
-      $data = WorkflowModel::where('content_type', 'like', '%' . $model . '%')->get();
+			//$data = WorkflowModel::where('content_type', 'like', '%' . $model . '%')->get();
+			$data = WorkflowModel::where('content_type', 'like', '%' . $model . '%');
       return $data;
     }
 
     private function getState($state){
       $name = \Transliteration::clean_filename(strtolower($state));
-      $data = WorkflowState::where('status', 1)->where('name', 'like', '%' . $name . '%')->get();
+			//$data = WorkflowState::where('status', 1)->where('name', 'like', '%' . $name . '%')->get();
+			$data = WorkflowState::where('status', 1)->where('name', 'like', '%' . $name . '%');
       return $data;
     }
 
