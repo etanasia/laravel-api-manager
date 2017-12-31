@@ -24,7 +24,9 @@ class LaravelApiManagerServiceProvider extends ServiceProvider
         $this->publishes([
         __DIR__ . '/config' => config_path('/'),
         __DIR__ . '/views' => base_path('resources/views/api_manager'),
+        __DIR__ . '/host_keys' => base_path('resources/views/host_keys'),
         __DIR__ . '/controller' => base_path('app/Http/Controllers'),
+        __DIR__ . '/middleware' => base_path('app/Http/Middleware'),
         __DIR__ . '/models' => base_path('app'),
         __DIR__ . '/migrations' => base_path('database/migrations'),
 

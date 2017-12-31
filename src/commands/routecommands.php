@@ -42,7 +42,7 @@ class RouteCommands extends Command
     public function __construct()
     {
         parent::__construct();
-        
+
     }
 
     /**
@@ -57,11 +57,19 @@ class RouteCommands extends Command
         $replace_middleware = File::get(__DIR__.'/../stubs/route.stub');
         return $replace_middleware;
     }
-    
+
+   protected function contentApi()
+   {
+
+       $replace_middleware = File::get(__DIR__.'/../stubs/routeApi.stub');
+       return $replace_middleware;
+   }
+
 
     public function handle()
-    {               
+    {
         $this->info('Route add success'); 
-        File::append(base_path('routes/web.php'),"\n".$this->content());        
+        File::append(base_path('routes/web.php'),"\n".$this->content());
+        File::append(base_path('routes/api.php'),"\n".$this->contentApi());
     }
 }

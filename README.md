@@ -55,7 +55,9 @@ hasilnya kegini
 ```sh
 Copied Directory [/vendor/bantenprov/laravel-api-manager/src/config] To [/config]
 Copied Directory [/vendor/bantenprov/laravel-api-manager/src/views] To [/resources/views/api_manager]
+Copied Directory [/vendor/bantenprov/laravel-api-manager/src/host_keys] To [/resources/views/host_keys]
 Copied Directory [/vendor/bantenprov/laravel-api-manager/src/controller] To [/app/Http/Controllers]
+Copied Directory [/vendor/bantenprov/laravel-api-manager/src/middleware] To [/app/Http/Middleware]
 Copied Directory [/vendor/bantenprov/laravel-api-manager/src/models] To [/app]
 Copied Directory [/vendor/bantenprov/laravel-api-manager/src/migrations] To [/database/migrations]
 Copied Directory [/vendor/laravel/framework/src/Illuminate/Mail/resources/views] To [/resources/views/vendor/mail]
@@ -71,6 +73,15 @@ php artisan laravel-api-manager:add-route
 hasilnya akan menambahkan route resource di routes/web.php
 ```sh
 Route::resource('api-manager', 'ApiManagerController');
+Route::resource('host-keys', 'HostkeysController');
+```
+
+dan akan menambahkan route resource di routes/api.php
+```sh
+Route::group(['prefix' => 'v1'], function(){
+  Route::resource('api-manager', 'ApiManagerController');
+  Route::resource('host-keys', 'HostkeysController');
+});
 ```
 
 #### <i class="icon-file"></i> Migrasi database
@@ -78,7 +89,6 @@ Route::resource('api-manager', 'ApiManagerController');
 running script
 ```sh
 php artisan migrate
-php artisan make:middleware ApiKey
 ```
 
 tambahkan ini pada file app/Http/Kernel.php
@@ -93,40 +103,6 @@ protected $routeMiddleware = [
         ....
         'ApiKey' => \App\Http\Middleware\ApiKey::class,
     ];
-```
-
-dalam middleware ApiKey di app/Http/Middleware/ApiKey.php tambahkan ini.
-```php
-....
-use Redirect;
-use Validator;
-use App\ApiKeys;
-
-class ApiKey
-{
-    public function handle($request, Closure $next)
-    {
-        ....
-        if($request->get('apikey') == '')
-        {
-            return response()->json([
-                'error'     => true,
-                'message'   => 'apikey not found',
-                'data'      => []
-                ]);
-        }
-        $check = ApiKeys::where('api_key', $request->get('apikey'))->first();
-        if(count($check) == 0)
-        {
-            return response()->json([
-                'error'     => true,
-                'message'   => 'invalid apikey',
-                'data'      => []
-                ]);
-        }
-        return $next($request);
-    }
-}
 ```
 
 dalam route web di routes/web.php tambahkan ini di route yang ingin menggunakan authentication apikey.

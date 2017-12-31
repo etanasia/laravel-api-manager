@@ -17,7 +17,10 @@
   "minimum-stability": "dev",
       "require": {
                   "illuminate/support": "~5.1",
-                  "php" : "~5.6|~7.0"
+                  "php" : "~5.6|~7.0",
+                  "guzzlehttp/guzzle": "^6.3",
+                  "that0n3guy/transliteration": "2.0.x",
+                  "bantenprov/workflow" : "dev-dev"
                   },
        "require-dev": {
                   "phpunit/phpunit" : ">=5.4.3",

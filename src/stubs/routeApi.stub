@@ -1,0 +1,7 @@
+
+Route::group(['prefix' => 'v1'], function(){
+  Route::resource('api-manager', 'ApiManagerController');
+  Route::post('api-manager/request','ApiManagerController@request');
+  Route::post('api-manager/receive','ApiManagerController@receive');
+  Route::resource('host-keys', 'HostkeysController');
+});
