@@ -238,9 +238,9 @@ class ApiManagerController extends Controller
     	}
 
       try {
-          $client 			= str_replace(array('https://', 'http://'), array('',''),$request->client);
-          $requests = ucwords($request->request);
-          $user_id = $request->user_id;
+          $client 			= str_replace(array('https://', 'http://'), array('',''),$request->input('client'));
+          $requests = ucwords($request->input('request'));
+          $user_id = $request->input('user_id');
           $data = ApiKeys::where('client', 'like', '%' . $client . '%');
           if($data->count() == 0){
             $token 		= $this->token();
@@ -431,8 +431,8 @@ class ApiManagerController extends Controller
       else{ $current_user = Auth::user()->id; }
 
       try {
-          $client 			= str_replace(array('https://', 'http://'), array('',''),$request->client);
-          $requests = ucwords($request->request);
+          $client 			= str_replace(array('https://', 'http://'), array('',''),$request->input('client'));
+          $requests = ucwords($request->input('request'));
           $data = ApiKeys::where('client', 'like', '%' . $client . '%');
           if($data->count() == 0){
             $token 		= $this->token();
@@ -569,6 +569,7 @@ class ApiManagerController extends Controller
                   Session::flash('message', 'Api Keys Data Saved Successfuly. Your request has already been send.');
         			}
             }
+            $history = $this->getHistory($get->id)->get();
             foreach ($history as $value) {
               $workstatefromid = $value->getStateFrom->id;
               $workstatetoid = $value->getStateTo->id;
@@ -606,15 +607,29 @@ class ApiManagerController extends Controller
         $body = json_encode($data);
 
         //kalo udah rilis
-        $url = $client."/api/v1/host-keys";
+        $urlget = $client."/api/v1/host-keys/".$client."/get";
 
         //untuk local
-        // $url = "dashboard.local/api/v1/api-manager/receive";
+        // $url = "bloger.local/api/v1/host-keys";
 
-        $client = new \GuzzleHttp\Client();
-        $res = $client->request('POST', $url,['headers'=>$headers,'body'=>$body]);
-        $response = $res->getBody();
-        $responses = json_decode($response);
+        $clients = new \GuzzleHttp\Client();
+        $resget = $clients->request('GET', $urlget,['headers'=>$headers]);
+        $responseget = $resget->getBody();
+        $responsesget = json_decode($responseget);
+
+        if($responsesget->result != 'Not Found'){
+          $clients = new \GuzzleHttp\Client();
+          $url = $client."/api/v1/host-keys/".$responsesget->id;
+          $res = $clients->request('PUT', $url,['headers'=>$headers,'body'=>$body]);
+          $response = $res->getBody();
+          $responses = json_decode($response);
+        }else {
+          $clients = new \GuzzleHttp\Client();
+          $url = $client."/api/v1/host-keys";
+          $res = $clients->request('POST', $url,['headers'=>$headers,'body'=>$body]);
+          $response = $res->getBody();
+          $responses = json_decode($response);
+        }
         return $responses;
     }
 

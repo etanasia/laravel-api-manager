@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="http://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <div class="wrapper">
 <div class="content-wrapper col-md-10 col-md-offset-1">
@@ -53,6 +54,9 @@
                         <td>{{$row->api_key}}</td>
                         <td><a href="{{ url('api-manager', $row->id).'/edit' }}" class="btn btn-warning btn-sm">
                         	action
+                        </a>
+                        <a href="{{ url('api-manager', $row->id).'' }}" class="btn btn-success btn-sm">
+                        	view
                         </a></td>
                     </tr>
                     @endforeach

@@ -6,7 +6,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Hostkeys extends Model 
+class Hostkeys extends Model
 {
     use Notifiable;
 
@@ -20,12 +20,12 @@ class Hostkeys extends Model
 
     public function getState()
     {
-        return $this->belongsTo('App\WorkflowState', 'state', 'id');
+        return $this->belongsTo('Bantenprov\Workflow\Models\WorkflowState', 'state', 'id');
     }
 
     public function getTransition()
     {
-        return $this->belongsTo('App\WorkflowTransition', 'transition', 'id');
+        return $this->belongsTo('Bantenprov\Workflow\Models\WorkflowTransition', 'transition', 'id');
     }
 
     public function getUserName()

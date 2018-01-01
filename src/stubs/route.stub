@@ -2,3 +2,4 @@
 Route::resource('api-manager', 'ApiManagerController');
 Route::post('api-manager/transition','ApiManagerController@transition');
 Route::resource('host-keys', 'HostkeysController');
+Route::post('host-keys/request', 'HostkeysController@request');

@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="http://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <div class="wrapper">
 <div class="content-wrapper col-md-10 col-md-offset-1">
@@ -36,6 +37,7 @@
             <div class="box-header">
             </div><!-- /.box-header -->
             <div class="box-body table-responsive">
+                <span class="btn btn-success" onclick="request()">Request</span>
                 <table class="table table-bordered table-hover">
                     <tr>
                         <th style="width: 10px">#</th>
@@ -71,3 +73,24 @@
 </section>
 </div>
 </div>
+<script type="text/javascript">
+  function request() {
+    var base_url = "{{ url('/') }}";
+    var a = confirm("Are You sure You want to request Apikey?");
+    if(a == true){
+      $.ajax({
+        headers: {
+              'X-CSRF-TOKEN': "{{ csrf_token() }}"
+        },
+  			url : "/host-keys/request",
+  			data : {
+            client: base_url,
+            requests: "Request"
+        },
+  			type : 'POST'
+  		});
+    }else {
+      return false;
+    }
+  }
+</script>
