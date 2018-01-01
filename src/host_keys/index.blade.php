@@ -55,7 +55,7 @@
                         <td>{{$row->keys}}</td>
                         <td>{{$row->state}}</td>
                         <td>{{$row->transition}}</td>
-                        <td>{{$row->user_id}}</td>
+                        <td>{{$row->getUserName->name}}</td>
                     </tr>
                     @endforeach
                 </table>

@@ -42,33 +42,33 @@
                         @foreach($history as $row)
                         <tr>
                             <td>{{ $i++ }}</td>
-                            <td>{{$row->get_api_keys->client}}</td>
-                            <td>{{$row->get_workflow->label }}</a></td>
-                            <td>{{$row->get_state_from->label}}</td>
-                            <td>{{$row->get_state_to->label}}</td>
+                            <td>{{$row->getApiKeys->client}}</td>
+                            <td>{{$row->getWorkflow->label }}</a></td>
+                            <td>{{$row->getStateFrom->label}}</td>
+                            <td>{{$row->getStateTo->label}}</td>
                             <td>
                               @if($workflowstateto == "Approved" || $workflowstateto == "Rejected")
                                 Complete
                               @endif
                               @if($workflowstateto == "Request")
-                                @if($row->get_state_from->label == "Propose" || $row->get_state_to->label == "Request")
+                                @if($row->getStateFrom->label == "Propose" || $row->getStateTo->label == "Request")
                                   @foreach ($transition as $key)
                                     @if($key->from == "Request")
                                       @if($key->to == "Approved")
-                                        <span class="btn btn-success" onclick="transisi({{$key->get_api_keys->client}}, {{$key->to}})">{{$key->label}}</span>
+                                        <span class="btn btn-success" onclick="transisi({{$key->getApiKeys->client}}, {{$key->to}})">{{$key->label}}</span>
                                       @endif
                                       @if($key->to == "Rejected")
-                                        <span class="btn btn-danger" onclick="transisi({{$key->get_api_keys->client}}, {{$key->to}})">{{$key->label}}</span>
+                                        <span class="btn btn-danger" onclick="transisi({{$key->getApiKeys->client}}, {{$key->to}})">{{$key->label}}</span>
                                       @endif
                                     @endif
                                   @endforeach
                                 @endif
                               @endif
-                              @if($row->get_state_from->label == "Propose" || $row->get_state_to->label == "Propose")
+                              @if($row->getStateFrom->label == "Propose" || $row->getStateTo->label == "Propose")
                                 Complete
-                              @elseif($row->get_state_from->label == "Request" || $row->get_state_to->label == "Approved")
+                              @elseif($row->getStateFrom->label == "Request" || $row->getStateTo->label == "Approved")
                                 Complete
-                              @elseif($row->get_state_from->label == "Request" || $row->get_state_to->label == "Rejected")
+                              @elseif($row->getStateFrom->label == "Request" || $row->getStateTo->label == "Rejected")
                                 Complete
                               @endif
                             </td>
