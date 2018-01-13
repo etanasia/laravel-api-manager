@@ -10,15 +10,16 @@
     <!-- general form elements -->
     <div class="box box-primary">
         <div class="box-header">
-        <b>Create Api Keys</b>
+        <b>Request Api Keys</b>
         </div><!-- /.box-header -->
 
         <!-- form start -->
-        <form action="{{ url('api-manager') }}" method="post">
+        <form action="{{ url('host-keys/request') }}" method="post">
             <div class="box-body">
                 <div class="form-group{{ $errors->has('client') ? ' has-error' : '' }}">
                     <label for="name"> Client</label>
                     <input type="text" name="client" id="client" class="form-control" value="{{ old('client') }}" required>
+                    <input type="hidden" name="host" id="host" class="form-control" value="{{ url('/') }}">
                     @if ($errors->has('client'))
                         <span class="help-block">{{ $errors->first('client') }}</span>
                     @endif
@@ -34,8 +35,8 @@
 
             <div class="box-footer">
                 <div class="pull-right">
-                    <button type="submit" class="btn btn-primary">Save</button>
-                    <a href="{{ url('api-manager') }}" class="btn btn-danger">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Request</button>
+                    <a href="{{ url('host-keys') }}" class="btn btn-danger">Cancel</a>
                 </div>
             </div>
             {!! method_field('POST') !!}

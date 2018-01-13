@@ -53,7 +53,7 @@ class HostkeysController extends Controller
    */
   public function create()
   {
-
+    return view('host_keys.create');
   }
 
   /**
@@ -71,7 +71,7 @@ class HostkeysController extends Controller
           $hostkey->state 		= $request->state;
           $hostkey->transition 		= $request->transition;
           $hostkey->user_id           = $request->user_id;
-          if($request->state == 'Approved' || $request->state == 'Rejected'){
+          if($request->state == 'Approved' || $request->state == 'approved' || $request->state == 'Rejected' || $request->state == 'rejected'){
             $hostkey->save();
 
             $error = false;
@@ -157,18 +157,31 @@ class HostkeysController extends Controller
   }
 
   public function request(Request $request){
+      $validator = Validator::make($request->all(), [
+        'client'			=> 'required|unique:host_keys,hostname',
+        'description'		=> 'required',
+        ]);
+      if($validator->fails())
+      {
+        Session::flash('message', 'Please fix the error(s) below');
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+      }
       if(Auth::guest()){ $current_user = 1; }
       else{ $current_user = Auth::user()->id; }
       $headers = ['Content-Type' => 'application/json'];
       $data = [
-        'client' => $request->client,
-        'request' => $request->requests,
+        'client' => $request->host,
+        'request' => 'Request',
+        'deskripsi' => $request->description,
         'user_id' => $current_user
       ];
       $body = json_encode($data);
 
       //kalo udah rilis
-      $url = "https://dashboard-01.dev.bantenprov.go.id/api/v1/api-manager/request";
+      $clients 			= str_replace(array('https://', 'http://'), array('',''),$request->client);
+      $url = $clients."/api/v1/api-manager/request";
 
       //untuk local
       // $url = "dashboard.local/api/v1/api-manager/receive";
@@ -179,7 +192,7 @@ class HostkeysController extends Controller
       $responses = json_decode($response);
 
       $hostkey = New Hostkeys;
-      $hostkey->hostname 			= str_replace(array('https://', 'http://'), array('',''),$responses->result->client);
+      $hostkey->hostname 			= $clients;
       $hostkey->keys 			= "";
       $hostkey->state 		= $responses->result->request;
       $hostkey->transition 		= "Propose To ".$responses->result->request;
@@ -222,7 +235,7 @@ class HostkeysController extends Controller
            $hostkey->state 		= $request->state;
            $hostkey->transition 		= $request->transition;
            $hostkey->user_id           = $request->user_id;
-           if($request->state == 'Approved' || $request->state == 'Rejected'){
+           if($request->state == 'Approved' || $request->state == 'approved' || $request->state == 'Rejected' || $request->state == 'rejected'){
              $hostkey->save();
 
              $error = false;

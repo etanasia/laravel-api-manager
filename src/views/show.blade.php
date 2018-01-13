@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-<script src="http://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <div class="wrapper">
 <div class="content-wrapper col-md-10 col-md-offset-1">
@@ -48,18 +48,19 @@
                             <td>{{$row->getStateFrom->label}}</td>
                             <td>{{$row->getStateTo->label}}</td>
                             <td>
-                              @if($workflowstateto == "Approved" || $workflowstateto == "Rejected")
-                                Complete
-                              @else
-                                @if($row->getStateFrom->label == "Propose" && $row->getStateTo->label == "Propose")
-                                  Complete
-                                @elseif($row->getStateFrom->label == "Request" && $row->getStateTo->label == "Approved")
-                                  Complete
-                                @elseif($row->getStateFrom->label == "Request" && $row->getStateTo->label == "Rejected")
+                              @if($workflowstateto == "Approved" || $workflowstateto == "approved" || $workflowstateto == "Rejected" || $workflowstateto == "rejected")
+                                @if($row->getStateFrom->label == "Propose" && $row->getStateTo->label == "Request")
                                   Complete
                                 @endif
                               @endif
-                              @if($workflowstateto == "Request")
+                              @if($row->getStateFrom->label == "Propose" && $row->getStateTo->label == "Propose")
+                                Complete
+                              @elseif($row->getStateFrom->label == "Request" && $row->getStateTo->label == "Approved")
+                                Complete
+                              @elseif($row->getStateFrom->label == "Request" && $row->getStateTo->label == "Rejected")
+                                Complete
+                              @endif
+                              @if($workflowstateto == "Request" || $workflowstateto == "request")
                                 @if($row->getStateFrom->label == "Propose" && $row->getStateTo->label == "Request")
                                   @foreach ($transition as $key)
                                     @if($key->from == "Request" || $key->from == "request")
@@ -97,16 +98,17 @@
 </div>
 <script type="text/javascript">
   function transisi(clients, requests) {
-    var id = {{$id}};
+    var base_url = "{{ url('/') }}";
     var a = confirm("Are You sure You want to "+requests+"?");
     if(a == true){
       $.ajax({
         headers: {
               'X-CSRF-TOKEN': "{{ csrf_token() }}"
         },
-  			url : "/api-manager/transition",
+  			url : base_url+"/api-manager/transition",
   			data : {
             client: clients,
+            host: base_url,
             request: requests,
         },
   			type : 'POST'

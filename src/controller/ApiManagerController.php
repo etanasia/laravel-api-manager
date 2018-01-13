@@ -225,6 +225,7 @@ class ApiManagerController extends Controller
     	$validator = Validator::make($request->all(), [
     		'client'			=> 'required',
     		'request'		=> 'required',
+    		'deskripsi'		=> 'required',
     		'user_id'		=> 'required',
     		]);
 
@@ -240,6 +241,7 @@ class ApiManagerController extends Controller
       try {
           $client 			= str_replace(array('https://', 'http://'), array('',''),$request->input('client'));
           $requests = ucwords($request->input('request'));
+          $deskripsi = $request->input('deskripsi');
           $user_id = $request->input('user_id');
           $data = ApiKeys::where('client', 'like', '%' . $client . '%');
           if($data->count() == 0){
@@ -247,7 +249,7 @@ class ApiManagerController extends Controller
           	$api = New ApiKeys;
           	$api->client 			= $client;
           	$api->api_key 			= $token;
-          	$api->description 		= $requests;
+          	$api->description 		= $deskripsi;
             $api->user_id           = $user_id;
 
             //create history default
@@ -432,6 +434,7 @@ class ApiManagerController extends Controller
 
       try {
           $client 			= str_replace(array('https://', 'http://'), array('',''),$request->input('client'));
+          $host 			= str_replace(array('https://', 'http://'), array('',''),$request->input('host'));
           $requests = ucwords($request->input('request'));
           $data = ApiKeys::where('client', 'like', '%' . $client . '%');
           if($data->count() == 0){
@@ -578,7 +581,7 @@ class ApiManagerController extends Controller
             }
             $state = $workstateto;
             $transition = $workstatefrom.' To '.$workstateto;
-            $this->SendClient($client, $error, $statusCode, $title, $type, $message, $result, $state, $transition);
+            $this->SendClient($client, $host, $error, $statusCode, $title, $type, $message, $result, $state, $transition);
             return Redirect::to('api-manager');
           }
       } catch (Exception $e) {
@@ -587,7 +590,7 @@ class ApiManagerController extends Controller
       }
     }
 
-    private function SendClient($client, $error, $statusCode, $title, $type, $message, $result, $state, $transition){
+    private function SendClient($client, $host, $error, $statusCode, $title, $type, $message, $result, $state, $transition){
         if(Auth::guest()){ $current_user = 1; }
         else{ $current_user = Auth::user()->id; }
         $headers = ['Content-Type' => 'application/json'];
@@ -598,7 +601,7 @@ class ApiManagerController extends Controller
           'type' => $type,
           'message' => $message,
           'result' => $result,
-          'hostname' => $client,
+          'hostname' => $host,
           'keys' => $result->api_key,
           'state' => $state,
           'transition' => $transition,
@@ -607,7 +610,7 @@ class ApiManagerController extends Controller
         $body = json_encode($data);
 
         //kalo udah rilis
-        $urlget = $client."/api/v1/host-keys/".$client."/get";
+        $urlget = $client."/api/v1/host-keys/".$host."/get";
 
         //untuk local
         // $url = "bloger.local/api/v1/host-keys";
