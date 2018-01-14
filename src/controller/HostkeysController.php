@@ -231,7 +231,7 @@ class HostkeysController extends Controller
       // $url = "bloger.local/api/v1/host-keys";
 
       $client = new \GuzzleHttp\Client();
-      $res = $client->request('POST', $url,['headers'=>$headers]);
+      $res = $client->request('POST', $url,['headers'=>$headers,'body'=>$body]);
       $response = $res->getBody();
       $responses = json_decode($response);
       return $responses;
