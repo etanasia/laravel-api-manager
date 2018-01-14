@@ -661,6 +661,8 @@ class ApiManagerController extends Controller
         if(Auth::guest()){ $current_user = 1; }
         else{ $current_user = Auth::user()->id; }
         $headers = ['Content-Type' => 'application/json'];
+        $host 			= str_replace(array('https://', 'http://'), array('',''),$host);
+        $client 			= str_replace(array('https://', 'http://'), array('',''),$client);
         $data = [
           'host' => $host,
           'client' => $client,

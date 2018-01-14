@@ -216,9 +216,11 @@ class HostkeysController extends Controller
 
   private function send_apimanager($url_apimanager,$request,$current_user,$keterangan){
       $headers = ['Content-Type' => 'application/json'];
+      $host 			= str_replace(array('https://', 'http://'), array('',''),$request->host);
+      $client 			= str_replace(array('https://', 'http://'), array('',''),$request->client);
       $data = [
-        'host' => $request->host,
-        'client' => $request->client,
+        'host' => $host,
+        'client' => $client,
         'keterangan' => $keterangan,
         'user_id' => $current_user
       ];
