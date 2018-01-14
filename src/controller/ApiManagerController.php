@@ -280,7 +280,7 @@ class ApiManagerController extends Controller
         				$api->save();
         				$this->saveHistory($api, $workflow->first(), $statesFrom->first(), $statesTo->first(), $user_id);
                 if(env('URL_APIMANAGER') != NULL){
-                  $url_apimanager = env('URL_APIMANAGER');
+                  $url_apimanager = str_replace('"', '',env('URL_APIMANAGER'));
                   if($url_apimanager != "" || $url_apimanager != NULL || $url_apimanager != false || !empty($url_apimanager)){
                     $transition = "Propose to Propose";
                     $this->send_apimanager($url_apimanager,$client,$host,$transition);
@@ -472,7 +472,7 @@ class ApiManagerController extends Controller
         				$api->save();
         				$this->saveHistory($api, $workflow->first(), $statesFrom->first(), $statesTo->first());
                 if(env('URL_APIMANAGER') != NULL){
-                  $url_apimanager = env('URL_APIMANAGER');
+                  $url_apimanager = str_replace('"', '',env('URL_APIMANAGER'));
                   if($url_apimanager != "" || $url_apimanager != NULL || $url_apimanager != false || !empty($url_apimanager)){
                     $transition = "Propose to Propose";
                     $this->send_apimanager($url_apimanager,$client,$host,$transition);
@@ -598,7 +598,7 @@ class ApiManagerController extends Controller
             $transition = $workstatefrom.' To '.$workstateto;
             $this->SendClient($client, $host, $error, $statusCode, $title, $type, $message, $result, $state, $transition);
             if(env('URL_APIMANAGER') != NULL){
-              $url_apimanager = env('URL_APIMANAGER');
+              $url_apimanager = str_replace('"', '',env('URL_APIMANAGER'));
               if($url_apimanager != "" || $url_apimanager != NULL || $url_apimanager != false || !empty($url_apimanager)){
                 $this->send_apimanager($url_apimanager,$client,$host,$transition);
               }

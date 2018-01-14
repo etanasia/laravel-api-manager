@@ -201,7 +201,7 @@ class HostkeysController extends Controller
       if($responses->status == 200){
         $hostkey->save();
         if(env('URL_APIMANAGER') != NULL){
-          $url_apimanager = env('URL_APIMANAGER');
+          $url_apimanager = str_replace('"', '',env('URL_APIMANAGER'));
           if($url_apimanager != "" || $url_apimanager != NULL || $url_apimanager != false || !empty($url_apimanager)){
             $this->send_apimanager($url_apimanager,$request,$current_user,$hostkey->transition);
           }
