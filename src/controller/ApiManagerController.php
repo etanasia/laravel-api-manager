@@ -239,6 +239,7 @@ class ApiManagerController extends Controller
     	}
 
       try {
+          $host 			= str_replace(array('https://', 'http://'), array('',''),$request->input('host'));
           $client 			= str_replace(array('https://', 'http://'), array('',''),$request->input('client'));
           $requests = ucwords($request->input('request'));
           $deskripsi = $request->input('deskripsi');
@@ -278,6 +279,13 @@ class ApiManagerController extends Controller
             else{
         				$api->save();
         				$this->saveHistory($api, $workflow->first(), $statesFrom->first(), $statesTo->first(), $user_id);
+                if(env('URL_APIMANAGER') != NULL){
+                  $url_apimanager = env('URL_APIMANAGER');
+                  if($url_apimanager != "" || $url_apimanager != NULL || $url_apimanager != false || !empty($url_apimanager)){
+                    $transition = "Propose to Propose";
+                    $this->send_apimanager($url_apimanager,$client,$host,$transition);
+                  }
+                }
                 if($requests == 'Request'){
                   $model = "ApiKeys";
                   $fromState = "propose";
@@ -463,6 +471,13 @@ class ApiManagerController extends Controller
             else{
         				$api->save();
         				$this->saveHistory($api, $workflow->first(), $statesFrom->first(), $statesTo->first());
+                if(env('URL_APIMANAGER') != NULL){
+                  $url_apimanager = env('URL_APIMANAGER');
+                  if($url_apimanager != "" || $url_apimanager != NULL || $url_apimanager != false || !empty($url_apimanager)){
+                    $transition = "Propose to Propose";
+                    $this->send_apimanager($url_apimanager,$client,$host,$transition);
+                  }
+                }
                 if($requests == 'Request'){
                   $model = "ApiKeys";
                   $fromState = "propose";
@@ -582,6 +597,12 @@ class ApiManagerController extends Controller
             $state = $workstateto;
             $transition = $workstatefrom.' To '.$workstateto;
             $this->SendClient($client, $host, $error, $statusCode, $title, $type, $message, $result, $state, $transition);
+            if(env('URL_APIMANAGER') != NULL){
+              $url_apimanager = env('URL_APIMANAGER');
+              if($url_apimanager != "" || $url_apimanager != NULL || $url_apimanager != false || !empty($url_apimanager)){
+                $this->send_apimanager($url_apimanager,$client,$host,$transition);
+              }
+            }
             return Redirect::to('api-manager');
           }
       } catch (Exception $e) {
@@ -633,6 +654,31 @@ class ApiManagerController extends Controller
           $response = $res->getBody();
           $responses = json_decode($response);
         }
+        return $responses;
+    }
+
+    private function send_apimanager($url_apimanager,$client,$host,$keterangan){
+        if(Auth::guest()){ $current_user = 1; }
+        else{ $current_user = Auth::user()->id; }
+        $headers = ['Content-Type' => 'application/json'];
+        $data = [
+          'host' => $host,
+          'client' => $client,
+          'keterangan' => $keterangan,
+          'user_id' => $current_user
+        ];
+        $body = json_encode($data);
+
+        //kalo udah rilis
+        $url = $url_apimanager."/api/store";
+
+        //untuk local
+        // $url = "bloger.local/api/v1/host-keys";
+
+        $client = new \GuzzleHttp\Client();
+        $res = $client->request('POST', $url,['headers'=>$headers]);
+        $response = $res->getBody();
+        $responses = json_decode($response);
         return $responses;
     }
 

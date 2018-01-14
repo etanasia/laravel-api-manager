@@ -172,6 +172,7 @@ class HostkeysController extends Controller
       else{ $current_user = Auth::user()->id; }
       $headers = ['Content-Type' => 'application/json'];
       $data = [
+        'host' => $request->host,
         'client' => $request->client,
         'request' => 'Request',
         'deskripsi' => $request->description,
@@ -199,13 +200,41 @@ class HostkeysController extends Controller
       $hostkey->user_id           = $responses->result->user_id;
       if($responses->status == 200){
         $hostkey->save();
-
+        if(env('URL_APIMANAGER') != NULL){
+          $url_apimanager = env('URL_APIMANAGER');
+          if($url_apimanager != "" || $url_apimanager != NULL || $url_apimanager != false || !empty($url_apimanager)){
+            $this->send_apimanager($url_apimanager,$request,$current_user,$hostkey->transition);
+          }
+        }
         Session::flash('message', 'Send Request Api Keys Successfuly');
       }else {
         Session::flash('message', $responses->message);
       }
 
       return Redirect::to('host-keys');
+  }
+
+  private function send_apimanager($url_apimanager,$request,$current_user,$keterangan){
+      $headers = ['Content-Type' => 'application/json'];
+      $data = [
+        'host' => $request->host,
+        'client' => $request->client,
+        'keterangan' => $keterangan,
+        'user_id' => $current_user
+      ];
+      $body = json_encode($data);
+
+      //kalo udah rilis
+      $url = $url_apimanager."/api/store";
+
+      //untuk local
+      // $url = "bloger.local/api/v1/host-keys";
+
+      $client = new \GuzzleHttp\Client();
+      $res = $client->request('POST', $url,['headers'=>$headers]);
+      $response = $res->getBody();
+      $responses = json_decode($response);
+      return $responses;
   }
 
   /**
