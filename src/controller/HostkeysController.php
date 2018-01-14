@@ -158,7 +158,7 @@ class HostkeysController extends Controller
 
   public function request(Request $request){
       $validator = Validator::make($request->all(), [
-        'client'			=> 'required|unique:host_keys,hostname',
+        'host'			=> 'required|unique:host_keys,hostname',
         'description'		=> 'required',
         ]);
       if($validator->fails())
@@ -172,7 +172,7 @@ class HostkeysController extends Controller
       else{ $current_user = Auth::user()->id; }
       $headers = ['Content-Type' => 'application/json'];
       $data = [
-        'client' => $request->host,
+        'client' => $request->client,
         'request' => 'Request',
         'deskripsi' => $request->description,
         'user_id' => $current_user
@@ -180,8 +180,8 @@ class HostkeysController extends Controller
       $body = json_encode($data);
 
       //kalo udah rilis
-      $clients 			= str_replace(array('https://', 'http://'), array('',''),$request->client);
-      $url = $clients."/api/v1/api-manager/request";
+      $host 			= str_replace(array('https://', 'http://'), array('',''),$request->host);
+      $url = $host."/api/v1/api-manager/request";
 
       //untuk local
       // $url = "dashboard.local/api/v1/api-manager/receive";
@@ -192,7 +192,7 @@ class HostkeysController extends Controller
       $responses = json_decode($response);
 
       $hostkey = New Hostkeys;
-      $hostkey->hostname 			= $clients;
+      $hostkey->hostname 			= $host;
       $hostkey->keys 			= "";
       $hostkey->state 		= $responses->result->request;
       $hostkey->transition 		= "Propose To ".$responses->result->request;

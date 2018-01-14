@@ -16,12 +16,12 @@
         <!-- form start -->
         <form action="{{ url('host-keys/request') }}" method="post">
             <div class="box-body">
-                <div class="form-group{{ $errors->has('client') ? ' has-error' : '' }}">
-                    <label for="name"> Client</label>
-                    <input type="text" name="client" id="client" class="form-control" value="{{ old('client') }}" required>
-                    <input type="hidden" name="host" id="host" class="form-control" value="{{ url('/') }}">
-                    @if ($errors->has('client'))
-                        <span class="help-block">{{ $errors->first('client') }}</span>
+                <div class="form-group{{ $errors->has('host') ? ' has-error' : '' }}">
+                    <label for="name"> Host</label>
+                    <input type="text" name="host" id="host" class="form-control" value="{{ old('host') }}" required>
+                    <input type="hidden" name="client" id="client" class="form-control" value="{{ url('/') }}">
+                    @if ($errors->has('host'))
+                        <span class="help-block">{{ $errors->first('host') }}</span>
                     @endif
                 </div>
                 <div class="form-group{{ $errors->has('description') ? ' has-error' : '' }}">
