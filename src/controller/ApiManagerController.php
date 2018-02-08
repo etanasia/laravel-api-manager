@@ -32,11 +32,13 @@ class ApiManagerController extends Controller
     {
         try {
           if($request->get('search') != ''){
-            $data['data']	= ApiKeys::with('getUserName')->where('client', 'like', '%'.$request->get('search').'%')
+            $data['data']	= ApiKeys::with('getUserName')->with('getHistory')
+                                   ->where('client', 'like', '%'.$request->get('search').'%')
                                    ->orderBy('id', 'desc')
                                    ->paginate(env('PAGINATE', 10));
           } else{
-            $data['data']	= ApiKeys::with('getUserName')->orderBy('id', 'desc')->paginate(env('PAGINATE', 10));
+            $data['data']	= ApiKeys::with('getUserName')->with('getHistory')
+                                   ->orderBy('id', 'desc')->paginate(env('PAGINATE', 10));
           }
         } catch (Exception $e) {
             $data['data']	= [];
@@ -51,8 +53,11 @@ class ApiManagerController extends Controller
 
     public function store(Request $request)
     {
+        Validator::extend('without_spaces', function($attr, $value){
+          return preg_match('/^\S*$/u', $value);
+        });
       	$validator = Validator::make($request->all(), [
-      		'client'			=> 'required|unique:api_keys,client',
+      		'client'			=> 'required|without_spaces|unique:api_keys,client',
       		'description'		=> 'required',
       		]);
       	if($validator->fails())
@@ -102,24 +107,12 @@ class ApiManagerController extends Controller
     public function show($id)
     {
         try {
-            $transition = WorkflowTransition::all();
-            $data['transition'] = $transition;
-            $history = History::with('getApiKeys')
-                               ->with('getWorkflow')
-                               ->with('getStateFrom')
-                               ->with('getStateTo')
-                               ->with('getUserName')
-                               ->where('content_id', $id)
-                               ->get();
-
-            $data['history'] = $history;
+            $data['transition'] = WorkflowTransition::all();
+            $data['history'] = History::where('content_id', $id)->paginate(10);
+            $data['histories'] = History::where('content_id', $id)->orderBy('id', 'desc')->first();
             $data['id'] = $id;
-            foreach ($history as $value) {
-              $workstateto = $value->getStateTo->label;
-            }
-            $data['workflowstateto'] = $workstateto;
-        		$data['data'] = ApiKeys::where('id', $id)->first();
-        	  return view('api_manager.show', $data);
+            $data['data'] = ApiKeys::with('getHistory')->where('id', $id)->orderBy('id', 'desc')->first();
+            return view('api_manager.show', $data);
         } catch (Exception $e) {
             Session::flash('message', 'Error 404 #error not found');
             return Redirect::to('api-manager');
@@ -134,8 +127,11 @@ class ApiManagerController extends Controller
 
     public function update(Request $request, $id)
     {
+        Validator::extend('without_spaces', function($attr, $value){
+          return preg_match('/^\S*$/u', $value);
+        });
       	$validator = Validator::make($request->all(), [
-      		'client'			=> 'required|unique:api_keys,client,'.$id,
+      		'client'			=> 'required|without_spaces|unique:api_keys,client,'.$id,
       		'description'		=> 'required',
       		]);
       	if($validator->fails())
@@ -161,7 +157,7 @@ class ApiManagerController extends Controller
 
     public function token()
     {
-  	    $length = 70;
+  	    $length = 50;
 		    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 		    $charactersLength = strlen($characters);
 		    $randomString = '';
@@ -222,8 +218,11 @@ class ApiManagerController extends Controller
 
     public function request(Request $request)
     {
+      Validator::extend('without_spaces', function($attr, $value){
+        return preg_match('/^\S*$/u', $value);
+      });
     	$validator = Validator::make($request->all(), [
-    		'client'			=> 'required',
+    		'client'			=> 'required|without_spaces',
     		'request'		=> 'required',
     		'deskripsi'		=> 'required',
     		'user_id'		=> 'required',
@@ -343,22 +342,6 @@ class ApiManagerController extends Controller
               $message = 'Data has already been taken.';
               $result = $request->all();
             }
-            elseif($workstateto == 'Approved'){
-              $error = true;
-              $statusCode = 404;
-              $title = 'Error';
-              $type = 'error';
-              $message = 'Data has already been Approved.';
-              $result = $request->all();
-            }
-            elseif($workstateto == 'Rejected'){
-              $error = true;
-              $statusCode = 404;
-              $title = 'Error';
-              $type = 'error';
-              $message = 'Data has already been Rejected.';
-              $result = $request->all();
-            }
             else {
               if($requests == 'Request'){
                 $model = "ApiKeys";
@@ -384,14 +367,65 @@ class ApiManagerController extends Controller
                     $result = 'Not Found';
           			}
                 else{
-            				$this->saveHistory($get, $workflow->first(), $statesFrom->first(), $statesTo->first(), $user_id);
+                  if($workstateto != 'Propose'){
+                    $error = true;
+                    $statusCode = 404;
+                    $title = 'Error';
+                    $type = 'error';
+                    $message = 'Data has already been taken.';
+                    $result = $request->all();
+                  }else {
+                    $this->saveHistory($get, $workflow->first(), $statesFrom->first(), $statesTo->first(), $user_id);
                     $error = false;
                     $statusCode = 200;
                     $title = 'Success';
                     $type = 'success';
                     $message = 'Data created successfully. Your request has already been send.';
                     $result = $request->all();
+                  }
           			}
+              }
+              elseif($requests == 'Document Submitted'){
+                $model = "ApiKeys";
+                $fromState = $workstateto;
+                $toState = $requests;
+                $workflow = $this->getWorkflow($model);
+                $statesFrom = $this->getState($fromState);
+                $statesTo = $this->getState($toState);
+                if($workflow->count() == 0){
+                    $error = true;
+                    $statusCode = 404;
+                    $title = 'Error';
+                    $type = 'error';
+                    $message = 'Error Workflow not found';
+                    $result = 'Not Found';
+                }
+                elseif($statesTo->count() == 0 || $statesFrom->count() == 0){
+                    $error = true;
+                    $statusCode = 404;
+                    $title = 'Error';
+                    $type = 'error';
+                    $message = 'Error State not active or State not found';
+                    $result = 'Not Found';
+                }
+                else{
+                  if($workstateto != 'Needs Completed Document'){
+                    $error = true;
+                    $statusCode = 404;
+                    $title = 'Error';
+                    $type = 'error';
+                    $message = 'Data has already been taken.';
+                    $result = $request->all();
+                  }else {
+                    $this->saveHistory($get, $workflow->first(), $statesFrom->first(), $statesTo->first(), $user_id);
+                    $error = false;
+                    $statusCode = 200;
+                    $title = 'Success';
+                    $type = 'success';
+                    $message = 'Data created successfully. Your request has already been send.';
+                    $result = $request->all();
+                  }
+                }
               }
               else {
                 $error = true;
@@ -424,8 +458,11 @@ class ApiManagerController extends Controller
 
     public function transition(Request $request)
     {
+      Validator::extend('without_spaces', function($attr, $value){
+        return preg_match('/^\S*$/u', $value);
+      });
     	$validator = Validator::make($request->all(), [
-    		'client'			=> 'required',
+    		'client'			=> 'required|without_spaces',
     		'request'		=> 'required',
     		]);
 
@@ -475,7 +512,7 @@ class ApiManagerController extends Controller
                   $url_apimanager = str_replace('"', '',env('URL_APIMANAGER'));
                   if($url_apimanager != "" || $url_apimanager != NULL || $url_apimanager != false || !empty($url_apimanager)){
                     $transition = "Propose to Propose";
-                    $this->send_apimanager($url_apimanager,$client,$host,$transition);
+                    $this->send_apimanager($url_apimanager,$client,$host,$transition,$api->api_key);
                   }
                 }
                 if($requests == 'Request'){
@@ -522,28 +559,6 @@ class ApiManagerController extends Controller
               $result = $request->all();
 
       				Session::flash('message', 'Error 404 #error Data has already been taken.');
-            }
-            elseif($workstateto == 'Approved'){
-              // kirim ke client
-              $error = true;
-              $statusCode = 404;
-              $title = 'Error';
-              $type = 'error';
-              $message = 'Data has already been Approved.';
-              $result = $request->all();
-
-      				Session::flash('message', 'Error 101 #error Data has already been Approved.');
-            }
-            elseif($workstateto == 'Rejected'){
-              // kirim ke client
-              $error = true;
-              $statusCode = 404;
-              $title = 'Error';
-              $type = 'error';
-              $message = 'Data has already been Rejected.';
-              $result = $request->all();
-
-      				Session::flash('message', 'Error 101 #error Data has already been Rejected.');
             }
             else {
               $model = "ApiKeys";
@@ -596,11 +611,14 @@ class ApiManagerController extends Controller
             }
             $state = $workstateto;
             $transition = $workstatefrom.' To '.$workstateto;
+            if($requests != 'Approved'){
+              $result = $request->all();
+            }
             $this->SendClient($client, $host, $error, $statusCode, $title, $type, $message, $result, $state, $transition);
             if(env('URL_APIMANAGER') != NULL){
               $url_apimanager = str_replace('"', '',env('URL_APIMANAGER'));
               if($url_apimanager != "" || $url_apimanager != NULL || $url_apimanager != false || !empty($url_apimanager)){
-                $this->send_apimanager($url_apimanager,$client,$host,$transition);
+                $this->send_apimanager($url_apimanager,$client,$host,$transition,$get->api_key);
               }
             }
             return Redirect::to('api-manager');
@@ -614,6 +632,11 @@ class ApiManagerController extends Controller
     private function SendClient($client, $host, $error, $statusCode, $title, $type, $message, $result, $state, $transition){
         if(Auth::guest()){ $current_user = 1; }
         else{ $current_user = Auth::user()->id; }
+        if($state == 'Approved'){
+          $apikey = $result->api_key;
+        }else{
+          $apikey = NULL;
+        }
         $headers = ['Content-Type' => 'application/json'];
         $data = [
           'error' => $error,
@@ -623,64 +646,183 @@ class ApiManagerController extends Controller
           'message' => $message,
           'result' => $result,
           'hostname' => $host,
-          'keys' => $result->api_key,
+          'keys' => $apikey,
           'state' => $state,
           'transition' => $transition,
           'user_id' => $current_user
         ];
         $body = json_encode($data);
 
-        //kalo udah rilis
-        $urlget = $client."/api/v1/host-keys/".$host."/get";
+        try {
+            $urlget = "https://".$client."/api/v1/host-keys/".$host."/get";
+            $clients = new \GuzzleHttp\Client();
+            $resget = $clients->request('GET', $urlget,['headers'=>$headers]);
+            $responseget = $resget->getBody();
+            $responsesget = json_decode($responseget);
+            $msg = "success";
+        } catch (GuzzleException $e) {
+            $msg = "error";
+            $responsesget = $e;
+        }
 
-        //untuk local
-        // $url = "bloger.local/api/v1/host-keys";
-
-        $clients = new \GuzzleHttp\Client();
-        $resget = $clients->request('GET', $urlget,['headers'=>$headers]);
-        $responseget = $resget->getBody();
-        $responsesget = json_decode($responseget);
-
-        if($responsesget->result != 'Not Found'){
-          $clients = new \GuzzleHttp\Client();
-          $url = $client."/api/v1/host-keys/".$responsesget->id;
-          $res = $clients->request('PUT', $url,['headers'=>$headers,'body'=>$body]);
-          $response = $res->getBody();
-          $responses = json_decode($response);
+        if($msg == "success"){
+          $responsesget = $responsesget;
+          $resultget = $responsesget->result;
+          $message = 'Send Apikey to Host Api Manager successfully with description is '.$message;
         }else {
-          $clients = new \GuzzleHttp\Client();
-          $url = $client."/api/v1/host-keys";
-          $res = $clients->request('POST', $url,['headers'=>$headers,'body'=>$body]);
-          $response = $res->getBody();
-          $responses = json_decode($response);
+          try {
+              $urlget = "http://".$client."/api/v1/host-keys/".$host."/get";
+              $clients = new \GuzzleHttp\Client();
+              $resget = $clients->request('GET', $urlget,['headers'=>$headers]);
+              $responseget = $resget->getBody();
+              $responsesget = json_decode($responseget);
+              $msgz = "success";
+          } catch (GuzzleException $er) {
+              $msgz = "error";
+              $responsesget = $er;
+          }
+
+          if($msgz == "success"){
+            $responsesget = $responsesget;
+            $resultget = $responsesget->result;
+            $message = 'Send Apikey to Host Api Manager successfully with description is '.$message;
+          }else {
+            $responsesget = $responsesget->getMessage();
+            $resultget = 'Not Found';
+            $message = $msgz.' - '.$responsesget;
+          }
+        }
+
+        if($resultget != 'Not Found'){
+          try {
+              $clients = new \GuzzleHttp\Client();
+              $url = "https://".$client."/api/v1/host-keys/".$responsesget->id;
+              $res = $clients->request('PUT', $url,['headers'=>$headers,'body'=>$body]);
+              $response = $res->getBody();
+              $responses = json_decode($response);
+              $msg = "success";
+          } catch (GuzzleException $e) {
+              $msg = "error";
+              $responses = $e;
+          }
+
+          if($msg == "success"){
+            $responses = $responses;
+            $message = 'Send Apikey to Host Api Manager successfully with description is '.$message;
+          }else {
+            try {
+                $clients = new \GuzzleHttp\Client();
+                $url = "http://".$client."/api/v1/host-keys/".$responsesget->id;
+                $res = $clients->request('PUT', $url,['headers'=>$headers,'body'=>$body]);
+                $response = $res->getBody();
+                $responses = json_decode($response);
+                $msgz = "success";
+            } catch (GuzzleException $er) {
+                $msgz = "error";
+                $responses = $er;
+            }
+
+            if($msgz == "success"){
+              $responses = $responses;
+              $message = 'Send Apikey to Host Api Manager successfully with description is '.$message;
+            }else {
+              $responses = $responses->getMessage();
+              $message = $msgz.' - '.$responses;
+            }
+          }
+        }else {
+          try {
+              $clients = new \GuzzleHttp\Client();
+              $url = "https://".$client."/api/v1/host-keys";
+              $res = $clients->request('POST', $url,['headers'=>$headers,'body'=>$body]);
+              $response = $res->getBody();
+              $responses = json_decode($response);
+              $msg = "success";
+          } catch (GuzzleException $e) {
+              $msg = "error";
+              $responses = $e;
+          }
+
+          if($msg == "success"){
+            $responses = $responses;
+            $message = 'Send Apikey to Host Api Manager successfully with description is '.$message;
+          }else {
+            try {
+                $clients = new \GuzzleHttp\Client();
+                $url = "http://".$client."/api/v1/host-keys";
+                $res = $clients->request('POST', $url,['headers'=>$headers,'body'=>$body]);
+                $response = $res->getBody();
+                $responses = json_decode($response);
+                $msgz = "success";
+            } catch (GuzzleException $er) {
+                $msgz = "error";
+                $responses = $er;
+            }
+
+            if($msgz == "success"){
+              $responses = $responses;
+              $message = 'Send Apikey to Host Api Manager successfully with description is '.$message;
+            }else {
+              $responses = $responses->getMessage();
+              $message = $msgz.' - '.$responses;
+            }
+          }
         }
         return $responses;
     }
 
-    private function send_apimanager($url_apimanager,$client,$host,$keterangan){
+    private function send_apimanager($url_apimanager,$client,$host,$keterangan,$apikey=""){
         if(Auth::guest()){ $current_user = 1; }
         else{ $current_user = Auth::user()->id; }
         $headers = ['Content-Type' => 'application/json'];
-        $host 			= str_replace(array('https://', 'http://'), array('',''),$host);
-        $client 			= str_replace(array('https://', 'http://'), array('',''),$client);
+        $host       = str_replace(array('https://', 'http://'), array('',''),$host);
+        $client       = str_replace(array('https://', 'http://'), array('',''),$client);
         $data = [
           'host' => $host,
           'client' => $client,
           'keterangan' => $keterangan,
-          'user_id' => $current_user
+          'user_id' => $current_user,
+          'api_key' => $apikey
         ];
         $body = json_encode($data);
+        $url_apimanager       = str_replace(array('https://', 'http://'), array('',''),$url_apimanager);
 
-        //kalo udah rilis
-        $url = $url_apimanager."/api/store";
+        try {
+            $url = "https://".$url_apimanager."/api/store";
+            $client = new \GuzzleHttp\Client();
+            $res = $client->request('POST', $url,['headers'=>$headers,'body'=>$body]);
+            $response = $res->getBody();
+            $responses = json_decode($response);
+            $msg = "success";
+        } catch (GuzzleException $e) {
+            $msg = "error";
+            $responses = $e;
+        }
 
-        //untuk local
-        // $url = "bloger.local/api/v1/host-keys";
+        if($msg == "success"){
+          $responses = $responses;
+          $message = 'Send Apikey to Host Api Manager successfully with description is '.$keterangan;
+        }else {
+          try {
+              $urlz = "http://".$url_apimanager."/api/store";
+              $clientz = new \GuzzleHttp\Client();
+              $resz = $clientz->request('POST', $urlz,['headers'=>$headers,'body'=>$body]);
+              $responsez = $resz->getBody();
+              $responsesz = json_decode($responsez);
+              $msgz = "success";
+          } catch (GuzzleException $er) {
+              $msgz = "error";
+              $responsesz = $er;
+          }
 
-        $client = new \GuzzleHttp\Client();
-        $res = $client->request('POST', $url,['headers'=>$headers,'body'=>$body]);
-        $response = $res->getBody();
-        $responses = json_decode($response);
+          if($msgz == "success"){
+            $responses = $responsesz;
+            $message = 'Send Apikey to Host Api Manager successfully with description is '.$keterangan;
+          }else {
+            $responses = $responsesz->getMessage();
+            $message = $msgz.' - '.$responsesz->getMessage();
+          }
+        }
         return $responses;
     }
 

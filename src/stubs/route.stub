@@ -1,5 +1,5 @@
 
 Route::resource('api-manager', 'ApiManagerController');
-Route::post('api-manager/transition','ApiManagerController@transition');
+Route::post('api-manager/transition','ApiManagerController@transition')->name('StoreTransitionApiManager');
 Route::resource('host-keys', 'HostkeysController');
-Route::post('host-keys/request', 'HostkeysController@request');
+Route::post('host-keys/request', 'HostkeysController@request')->name('StoreRequestHostKeys');

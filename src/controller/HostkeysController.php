@@ -64,30 +64,25 @@ class HostkeysController extends Controller
   public function store(Request $request)
   {
       try {
-          $token 		= $request->keys;
+          if($request->keys != NULL){
+            $keys = $request->keys;
+          }else {
+            $keys = "";
+          }
           $hostkey = New Hostkeys;
           $hostkey->hostname 			= str_replace(array('https://', 'http://'), array('',''),$request->hostname);
-          $hostkey->keys 			= $token;
+          $hostkey->keys 			= $keys;
           $hostkey->state 		= $request->state;
           $hostkey->transition 		= $request->transition;
           $hostkey->user_id           = $request->user_id;
-          if($request->state == 'Approved' || $request->state == 'approved' || $request->state == 'Rejected' || $request->state == 'rejected'){
-            $hostkey->save();
+          $hostkey->save();
 
-            $error = false;
-            $statusCode = 200;
-            $title = 'Success';
-            $type = 'success';
-            $message = 'Data Saved Successfuly.';
-            $result = $hostkey;
-          }else {
-              $error = true;
-              $statusCode = 404;
-              $title = 'Error';
-              $type = 'error';
-              $message = 'Error';
-              $result = 'Not Found';
-          }
+          $error = false;
+          $statusCode = 200;
+          $title = 'Success';
+          $type = 'success';
+          $message = 'Data Saved Successfuly.';
+          $result = $hostkey;
       } catch (Exception $e) {
           $error = true;
           $statusCode = 404;
@@ -157,8 +152,11 @@ class HostkeysController extends Controller
   }
 
   public function request(Request $request){
+      Validator::extend('without_spaces', function($attr, $value){
+        return preg_match('/^\S*$/u', $value);
+      });
       $validator = Validator::make($request->all(), [
-        'host'			=> 'required|unique:host_keys,hostname',
+        'host'			=> 'required|without_spaces|unique:host_keys,hostname',
         'description'		=> 'required',
         ]);
       if($validator->fails())
@@ -179,18 +177,43 @@ class HostkeysController extends Controller
         'user_id' => $current_user
       ];
       $body = json_encode($data);
-
-      //kalo udah rilis
       $host 			= str_replace(array('https://', 'http://'), array('',''),$request->host);
-      $url = $host."/api/v1/api-manager/request";
 
-      //untuk local
-      // $url = "dashboard.local/api/v1/api-manager/receive";
+      try {
+          $url = "https://".$host."/api/v1/api-manager/request";
+          $client = new \GuzzleHttp\Client();
+          $res = $client->request('POST', $url,['headers'=>$headers,'body'=>$body]);
+          $response = $res->getBody();
+          $responses = json_decode($response);
+          $msg = "success";
+      } catch (GuzzleException $e) {
+          $msg = "error";
+          $responses = $e;
+      }
 
-      $client = new \GuzzleHttp\Client();
-      $res = $client->request('POST', $url,['headers'=>$headers,'body'=>$body]);
-      $response = $res->getBody();
-      $responses = json_decode($response);
+      if($msg == "success"){
+        $responses = $responses;
+      }else {
+        try {
+            $urlz = "http://".$host."/api/v1/api-manager/request";
+            $clientz = new \GuzzleHttp\Client();
+            $resz = $clientz->request('POST', $urlz,['headers'=>$headers,'body'=>$body]);
+            $responsez = $resz->getBody();
+            $responsesz = json_decode($responsez);
+            $msgz = "success";
+        } catch (GuzzleException $er) {
+            $msgz = "error";
+            $responsesz = $er;
+        }
+
+        if($msgz == "success"){
+          $responses = $responsesz;
+        }else {
+          $message = $msgz.' - '.$responsesz->getMessage();
+          Session::flash('message', $message);
+          return Redirect::to('host-keys');
+        }
+      }
 
       $hostkey = New Hostkeys;
       $hostkey->hostname 			= $host;
@@ -216,8 +239,8 @@ class HostkeysController extends Controller
 
   private function send_apimanager($url_apimanager,$request,$current_user,$keterangan){
       $headers = ['Content-Type' => 'application/json'];
-      $host 			= str_replace(array('https://', 'http://'), array('',''),$request->host);
-      $client 			= str_replace(array('https://', 'http://'), array('',''),$request->client);
+      $host       = str_replace(array('https://', 'http://'), array('',''),$request->host);
+      $client       = str_replace(array('https://', 'http://'), array('',''),$request->client);
       $data = [
         'host' => $host,
         'client' => $client,
@@ -225,17 +248,45 @@ class HostkeysController extends Controller
         'user_id' => $current_user
       ];
       $body = json_encode($data);
+      $url_apimanager       = str_replace(array('https://', 'http://'), array('',''),$url_apimanager);
 
-      //kalo udah rilis
-      $url = $url_apimanager."/api/store";
+      try {
+          $url = "https://".$url_apimanager."/api/store";
+          $client = new \GuzzleHttp\Client();
+          $res = $client->request('POST', $url,['headers'=>$headers,'body'=>$body]);
+          $response = $res->getBody();
+          $responses = json_decode($response);
+          $msg = "success";
+      } catch (GuzzleException $e) {
+          $msg = "error";
+          $responses = $e;
+      }
 
-      //untuk local
-      // $url = "bloger.local/api/v1/host-keys";
+      if($msg == "success"){
+        $responses = $responses;
+        $message = 'Send Apikey to Host Api Manager successfully with description is '.$keterangan;
+      }else {
+        try {
+            $urlz = "http://".$url_apimanager."/api/store";
+            $clientz = new \GuzzleHttp\Client();
+            $resz = $clientz->request('POST', $urlz,['headers'=>$headers,'body'=>$body]);
+            $responsez = $resz->getBody();
+            $responsesz = json_decode($responsez);
+            $msgz = "success";
+        } catch (GuzzleException $er) {
+            $msgz = "error";
+            $responsesz = $er;
+        }
 
-      $client = new \GuzzleHttp\Client();
-      $res = $client->request('POST', $url,['headers'=>$headers,'body'=>$body]);
-      $response = $res->getBody();
-      $responses = json_decode($response);
+        if($msgz == "success"){
+          $responses = $responsesz;
+          $message = 'Send Apikey to Host Api Manager successfully with description is '.$keterangan;
+        }else {
+          $responses = $responsesz->getMessage();
+          $message = $msgz.' - '.$responsesz->getMessage();
+        }
+      }
+
       return $responses;
   }
 
@@ -259,30 +310,25 @@ class HostkeysController extends Controller
    public function update(Request $request, $id)
    {
        try {
-           $token 		= $request->keys;
+           if($request->keys != NULL){
+             $keys = $request->keys;
+           }else {
+             $keys = "";
+           }
            $hostkey = Hostkeys::findOrFail($id);
            $hostkey->hostname 			= str_replace(array('https://', 'http://'), array('',''),$request->hostname);
-           $hostkey->keys 			= $token;
+           $hostkey->keys 			= $keys;
            $hostkey->state 		= $request->state;
            $hostkey->transition 		= $request->transition;
            $hostkey->user_id           = $request->user_id;
-           if($request->state == 'Approved' || $request->state == 'approved' || $request->state == 'Rejected' || $request->state == 'rejected'){
-             $hostkey->save();
+           $hostkey->save();
 
-             $error = false;
-             $statusCode = 200;
-             $title = 'Success';
-             $type = 'success';
-             $message = 'Data Saved Successfuly.';
-             $result = $hostkey;
-           }else {
-               $error = true;
-               $statusCode = 404;
-               $title = 'Error';
-               $type = 'error';
-               $message = 'Error';
-               $result = 'Not Found';
-           }
+           $error = false;
+           $statusCode = 200;
+           $title = 'Success';
+           $type = 'success';
+           $message = 'Data Saved Successfuly.';
+           $result = $hostkey;
        } catch (Exception $e) {
            $error = true;
            $statusCode = 404;

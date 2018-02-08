@@ -1,8 +1,9 @@
 
 Route::group(['prefix' => 'v1'], function(){
   Route::resource('api-manager', 'ApiManagerController');
-  Route::post('api-manager/request','ApiManagerController@request');
-  Route::post('api-manager/receive','ApiManagerController@receive');
+  Route::post('api-manager/request','ApiManagerController@request')->name('ApiRequest');
+  Route::post('api-manager/transition','ApiManagerController@transition')->name('ApiTransition');
+  Route::post('api-manager/receive','ApiManagerController@receive')->name('ApiReceive');
   Route::resource('host-keys', 'HostkeysController');
-  Route::get('host-keys/{hostname}/get', 'HostkeysController@get');
+  Route::get('host-keys/{hostname}/get', 'HostkeysController@get')->name('ApiHostkey');
 });

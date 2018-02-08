@@ -43,6 +43,9 @@
                         <th>Created At</th>
                         <th>Client</th>
                         <th>Api Keys</th>
+                        <th>User</th>
+                        <th>Description</th>
+                        <th>Status</th>
                         <th>Action</th>
                     </tr>
                     <?php $i = 1 + $data->currentPage() * $data->perPage() - $data->perPage(); ?>
@@ -52,6 +55,9 @@
                         <td>{{$row->created_at->format('M d, Y')}}</td>
                         <td>{{ $row->client }}</a></td>
                         <td>{{$row->api_key}}</td>
+                        <td>{{ $row->getUserName->name }}</a></td>
+                        <td>{{ $row->description }}</a></td>
+                        <td>{{ $row->getHistory->getStateTo->label }}</a></td>
                         <td><a href="{{ url('api-manager', $row->id).'/edit' }}" class="btn btn-warning btn-sm">
                         	action
                         </a>

@@ -14,19 +14,104 @@
         </div><!-- /.box-header -->
 
         <!-- form start -->
-        {{-- <form action="{{ url('api-manager', $data->id) }}" method="post"> --}}
             <div class="box-body">
-                <div class="form-group row">
-                    <div class="col-lg-6"><label for="api_keys">Api Keys</label></div>
-                    <div class="col-lg-6"><label for="api_keys">{{ $data->api_key }}</label></div>
+                <div class="form-group">
+                    <div class="col-lg-3"><label for="api_keys">Api Keys</label></div>
+                    <div class="col-lg-9"><label for="api_keys">{{ $data->api_key }}</label></div>
                 </div>
-                <div class="form-group row">
-                    <div class="col-lg-6"><label for="client">Client</label></div>
-                    <div class="col-lg-6"><label for="client">{{ $data->client }}</label></div>
+                <div class="form-group">
+                    <div class="col-lg-3"><label for="client">Client</label></div>
+                    <div class="col-lg-9"><label for="client">{{ $data->client }}</label></div>
                 </div>
-                <div class="form-group row">
-                    <div class="col-lg-6"><label for="description">Description</label></div>
-                    <div class="col-lg-6"><label for="description">{{ $data->description }}</label></div>
+                <div class="form-group">
+                    <div class="col-lg-3"><label for="description">Description</label></div>
+                    <div class="col-lg-9"><label for="description">{{ $data->description }}</label></div>
+                </div>
+                <div class="form-group">
+                    <div class="col-lg-3"><label for="description">Status</label></div>
+                    <div class="col-lg-9"><label for="description">{{ $data->getHistory->getStateTo->label }}</label></div>
+                </div>
+                <div class="form-group">
+                  <div class="col-lg-3"><label for="transition">Transition</label></div>
+                  <div class="col-lg-9">
+                  @foreach($transition as $keys)
+                    @if($data->getHistory->getStateTo->label == "Request")
+                      @if($histories->getStateFrom->label == "Propose" && $histories->getStateTo->label == "Request")
+                        @if($keys->from == "Request" || $keys->from == "request")
+                          @if($keys->to == "Approved" || $keys->to == "approved")
+                            <div class="col-lg-4 row">
+                              <span class="btn btn-success" onclick="transisi('{{$histories->getApiKeys->client}}', '{{$keys->to}}')">{{$keys->label}}</span>
+                            </div>
+                          @endif
+                          @if($keys->to == "Rejected" || $keys->to == "rejected")
+                            <div class="col-lg-4 row">
+                              <span class="btn btn-danger" onclick="transisi('{{$histories->getApiKeys->client}}', '{{$keys->to}}')">{{$keys->label}}</span>
+                            </div>
+                          @endif                          
+                          @if($keys->to == "Needs Completed Document" || $keys->to == "needs completed document")
+                            <div class="col-lg-4 row">
+                              <span class="btn btn-info" onclick="transisi('{{$histories->getApiKeys->client}}', '{{$keys->to}}')">{{$keys->label}}</span>
+                            </div>
+                          @endif
+                        @endif
+                      @endif
+                    @endif
+
+                    @if($data->getHistory->getStateTo->label == "Needs Completed Document")
+                      @if($histories->getStateFrom->label == "Request" && $histories->getStateTo->label == "Needs Completed Document")
+                        @if($keys->from == "Needs Completed Document" || $keys->from == "needs completed document")
+                          @if($keys->to == "Document Submitted" || $keys->to == "document submitted")
+                            <div class="col-lg-4 row">
+                              <span class="btn btn-primary" onclick="transisi('{{$histories->getApiKeys->client}}', '{{$keys->to}}')">{{$keys->label}}</span>
+                            </div>
+                          @endif
+                        @endif
+                      @endif
+                    @endif
+
+                    @if($data->getHistory->getStateTo->label == "Document Submitted")
+                      @if($histories->getStateFrom->label == "Needs Completed Document" && $histories->getStateTo->label == "Document Submitted")
+                        @if($keys->from == "Document Submitted" || $keys->from == "document submitted")
+                          @if($keys->to == "Approved" || $keys->to == "approved")
+                            <div class="col-lg-4 row">
+                              <span class="btn btn-success" onclick="transisi('{{$histories->getApiKeys->client}}', '{{$keys->to}}')">{{$keys->label}}</span>
+                            </div>
+                          @endif
+                          @if($keys->to == "Rejected" || $keys->to == "rejected")
+                            <div class="col-lg-4 row">
+                              <span class="btn btn-danger" onclick="transisi('{{$histories->getApiKeys->client}}', '{{$keys->to}}')">{{$keys->label}}</span>
+                            </div>
+                          @endif
+                        @endif
+                      @endif
+                    @endif
+
+                    @if($data->getHistory->getStateTo->label == "Approved")
+                      @if($histories->getStateFrom->label == "Request" && $histories->getStateTo->label == "Approved" || $histories->getStateFrom->label == "Document Submitted" && $histories->getStateTo->label == "Approved" || $histories->getStateFrom->label == "Rejected" && $histories->getStateTo->label == "Approved")
+                        @if($keys->from == "Approved" || $keys->from == "approved")
+                          @if($keys->to == "Rejected" || $keys->to == "rejected")
+                            <div class="col-lg-4 row">
+                              <span class="btn btn-danger" onclick="transisi('{{$histories->getApiKeys->client}}', '{{$keys->to}}')">{{$keys->label}}</span>
+                            </div>
+                          @endif
+                        @endif
+                      @endif
+                    @endif
+
+                    @if($data->getHistory->getStateTo->label == "Rejected")
+                      @if($histories->getStateFrom->label == "Request" && $histories->getStateTo->label == "Rejected" || $histories->getStateFrom->label == "Document Submitted" && $histories->getStateTo->label == "Rejected" || $histories->getStateFrom->label == "Approved" && $histories->getStateTo->label == "Rejected")
+                        @if($keys->from == "Rejected" || $keys->from == "rejected")
+                          @if($keys->to == "Approved" || $keys->to == "approved")
+                            <div class="col-lg-4 row">
+                              <span class="btn btn-success" onclick="transisi('{{$histories->getApiKeys->client}}', '{{$keys->to}}')">{{$keys->label}}</span>
+                            </div>
+                          @endif
+                        @endif
+                      @endif
+                    @endif
+
+                  @endforeach
+                  </div>
                 </div>
 
                 <div class="table-responsive">
@@ -39,7 +124,7 @@
                             <th>State To</th>
                             <th>Action</th>
                         </tr>
-                        <?php $i = 1; ?>
+                        <?php $i = 1 + $history->currentPage() * $history->perPage() - $history->perPage(); ?>
                         @foreach($history as $row)
                         <tr>
                             <td>{{ $i++ }}</td>
@@ -48,31 +133,26 @@
                             <td>{{$row->getStateFrom->label}}</td>
                             <td>{{$row->getStateTo->label}}</td>
                             <td>
-                              @if($workflowstateto == "Approved" || $workflowstateto == "approved" || $workflowstateto == "Rejected" || $workflowstateto == "rejected")
-                                @if($row->getStateFrom->label == "Propose" && $row->getStateTo->label == "Request")
-                                  Complete
-                                @endif
-                              @endif
                               @if($row->getStateFrom->label == "Propose" && $row->getStateTo->label == "Propose")
-                                Complete
+                                {{$row->getStateTo->label}} Complete
+                              @elseif($row->getStateFrom->label == "Propose" && $row->getStateTo->label == "Request")
+                                {{$row->getStateTo->label}} Complete
                               @elseif($row->getStateFrom->label == "Request" && $row->getStateTo->label == "Approved")
-                                Complete
+                                {{$row->getStateTo->label}} Complete
                               @elseif($row->getStateFrom->label == "Request" && $row->getStateTo->label == "Rejected")
-                                Complete
-                              @endif
-                              @if($workflowstateto == "Request" || $workflowstateto == "request")
-                                @if($row->getStateFrom->label == "Propose" && $row->getStateTo->label == "Request")
-                                  @foreach ($transition as $key)
-                                    @if($key->from == "Request" || $key->from == "request")
-                                      @if($key->to == "Approved" || $key->to == "approved")
-                                        <span class="btn btn-success" onclick="transisi('{{$row->getApiKeys->client}}', '{{$key->to}}')">{{$key->label}}</span>
-                                      @endif
-                                      @if($key->to == "Rejected" || $key->to == "rejected")
-                                        <span class="btn btn-danger" onclick="transisi('{{$row->getApiKeys->client}}', '{{$key->to}}')">{{$key->label}}</span>
-                                      @endif
-                                    @endif
-                                  @endforeach
-                                @endif
+                                {{$row->getStateTo->label}} Complete
+                              @elseif($row->getStateFrom->label == "Request" && $row->getStateTo->label == "Needs Completed Document")
+                                {{$row->getStateTo->label}} Complete
+                              @elseif($row->getStateFrom->label == "Needs Completed Document" && $row->getStateTo->label == "Document Submitted")
+                                {{$row->getStateTo->label}} Complete
+                              @elseif($row->getStateFrom->label == "Document Submitted" && $row->getStateTo->label == "Approved")
+                                {{$row->getStateTo->label}} Complete
+                              @elseif($row->getStateFrom->label == "Document Submitted" && $row->getStateTo->label == "Rejected")
+                                {{$row->getStateTo->label}} Complete
+                              @elseif($row->getStateFrom->label == "Approved" && $row->getStateTo->label == "Rejected")
+                                {{$row->getStateTo->label}} Complete
+                              @elseif($row->getStateFrom->label == "Rejected" && $row->getStateTo->label == "Approved")
+                                {{$row->getStateTo->label}} Complete
                               @endif
                             </td>
                         </tr>
@@ -82,13 +162,13 @@
             </div><!-- /.box-body -->
 
             <div class="box-footer">
+                {!! $history->render() !!}
                 <div class="pull-right">
                     <a href="{{ url('api-manager') }}" class="btn btn-danger">Cancel</a>
                 </div>
             </div>
             {{-- {!! method_field('PUT') !!}
             {!! csrf_field() !!} --}}
-        {{-- </form> --}}
     </div><!-- /.box -->
 
 </div><!--/.col -->
@@ -111,7 +191,10 @@
             host: base_url,
             request: requests,
         },
-  			type : 'POST'
+  			type : 'POST',
+        success : function(){
+            window.location ='{{ url()->current() }}'
+        }
   		});
     }else {
       return false;
