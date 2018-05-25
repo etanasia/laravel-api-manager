@@ -38,7 +38,7 @@ API Key Management ini dilengkapi dengan workflow management yang digunakan untu
 #### <i class="icon-file"></i> Install package
 
 ```sh
-$ composer require bantenprov/laravel-api-manager :dev-master
+$ composer require bantenprov/laravel-api-manager:dev-master
 ```
 #### <i class="icon-file"></i> edit file config/app.php
 
@@ -73,7 +73,7 @@ php artisan laravel-api-manager:add-route
 
 hasilnya akan menambahkan route resource di routes/web.php
 ```sh
-Route::resource('api_manager', 'ApiManagerController');
+Route::resource('api-manager', 'ApiManagerController');
 ```
 
 #### <i class="icon-file"></i> Migrasi database 
@@ -87,17 +87,13 @@ php artisan migrate
 
 browse dari browser anda
 ```sh
-http://your_domain.dev/api_manager
+http://your_domain.dev/api-manager
 ```
 #### <i class="icon-file"></i> Running Modul 
 
 tambahkan pada .env anda parameter berikut
 ```php
-BANTENPROV_APIHOST=""
+URL_APIMANAGER="api.bantenprov.go.id"
 ```
 untuk production site
-```php
-BANTENPROV_APIHOST=""
-```
-untuk development site
 #### <i class="icon-file"></i> Happy Coding  \\(*i^)//
